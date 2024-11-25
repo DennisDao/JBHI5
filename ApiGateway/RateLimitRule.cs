@@ -8,5 +8,6 @@ namespace ApiGateway
         public string EndPoint { get; set; }
         public int Limit { get; set; } = 2;
         public TimeSpan Window { get; set; } = TimeSpan.FromSeconds(60);
+        public LinkedList RequestHistory { get; set; }
     }
 }
