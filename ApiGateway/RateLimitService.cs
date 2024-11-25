@@ -2,34 +2,29 @@
 {
     public class RateLimitService
     {
-        private static readonly List<RateLimitRule> _rules = new List<RateLimitRule>()
+        private readonly IRateLimitRuleRepository _repository;
+        private readonly IDateTimeProvider _date;
+        public RateLimitService(IRateLimitRuleRepository repository, IDateTimeProvider dateTimeProvider)
         {
-            new RateLimitRule()
-            {
-                ApiKey = "ABC-123",
-                EndPoint = "/Weather",
-                Limit = 2,
-                Window = TimeSpan.FromSeconds(5),
-                RequestHistory = new LinkedList()
-            }
-        };
+            _repository = repository;
+            _date = dateTimeProvider;
+         }
 
         public bool IsLimitReached(string apiKey)
         {
-            var rule = _rules.FirstOrDefault(x => x.ApiKey == apiKey);
-
+            var rule = _repository.Get(apiKey);
             var head = rule?.RequestHistory.GetHead();
             var history = rule.RequestHistory;
 
             if (head == null)
             {
-                history.AddLast(DateTime.Now);
+                history.AddLast(_date.Now);
                 return false;
             }
             else
             {
                 var totalRequest = history.Count();
-                DateTime currentTime = DateTime.Now;
+                DateTime currentTime = _date.Now;
 
                 double totalMinutesElapsed = (currentTime - head.TimeStamp).TotalMinutes;
                 var isWithinWindow = totalMinutesElapsed <= rule.Window.TotalMinutes;
@@ -42,12 +37,12 @@
                 if (totalRequest == rule.Limit && !isWithinWindow)
                 {
                     history.RemoveHead();
-                    history.AddLast(DateTime.Now);
+                    history.AddLast(_date.Now);
                     return false;
                 }
                 else
                 {
-                    history.AddLast(DateTime.Now);
+                    history.AddLast(_date.Now);
                     return false;
                 }
             }
