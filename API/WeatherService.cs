@@ -13,7 +13,7 @@ namespace API
             _appSettings = appSettings.Value;
         }
 
-        public async Task<string> GetWeatherDataAsync(string country, string city)
+        public async Task<WeatherResponse> GetWeatherDataAsync(string country, string city)
         {
             string apiKey = _appSettings.OpenWeatherAPIKeys;
             string url = $"https://api.openweathermap.org/data/2.5/weather?q={country},{city}&appid={apiKey}";
@@ -26,11 +26,11 @@ namespace API
 
                 if (weatherResponse?.Weather != null && weatherResponse.Weather.Count > 0)
                 {
-                    return weatherResponse.Weather[0].Description;
+                    return weatherResponse;
                 }
             }
 
-            return "";
+            return null;
         }
     }
 }

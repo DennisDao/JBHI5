@@ -19,6 +19,7 @@ namespace API.Controllers
         public async Task<IActionResult> Get([FromQuery] string country, [FromQuery] string city)
         {
             var weatherData = await _weatherService.GetWeatherDataAsync(country, city);
+
             return Ok(weatherData);
         }
     }
