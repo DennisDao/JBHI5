@@ -8,6 +8,8 @@ namespace API
         private static readonly HttpClient httpClient = new HttpClient();
         private readonly AppSettings _appSettings;
 
+        public HttpClient HttpClient { get; set; } = httpClient;
+
         public WeatherService(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;

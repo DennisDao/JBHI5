@@ -33,7 +33,7 @@
         {
             ApiKey = "666-AAA",
             EndPoint = "/Weather",
-            Limit = 2,
+            Limit = 5,
             Window = TimeSpan.FromMinutes(1),
             RequestHistory = new LinkedList()
         };

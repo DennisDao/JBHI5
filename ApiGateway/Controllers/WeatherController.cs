@@ -22,20 +22,31 @@ namespace ApiGateway.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] string country, [FromQuery] string city)
         {
+            _logger.LogInformation("GetWeatherDescription endpoint called with country: {Country}, city: {City}", country, city);
+
             HttpClient httpClient = new HttpClient();
-            HttpResponseMessage response = await httpClient.GetAsync($"{_appSettings.ApiUrl}/Weather?country={country}&city={city}");
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(jsonResponse);
-
-                if (weatherResponse?.Weather != null && weatherResponse.Weather.Count > 0)
+                HttpResponseMessage response = await httpClient.GetAsync($"{_appSettings.ApiUrl}/Weather?country={country}&city={city}");
+                if (response.IsSuccessStatusCode)
                 {
-                    return Ok(weatherResponse.Weather[0].Description);
-                }
-            }
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(jsonResponse);
 
-            return BadRequest("Unable to retrieve weather data");
+                    if (weatherResponse?.Weather != null && weatherResponse.Weather.Count > 0)
+                    {
+                        return Ok(weatherResponse.Weather[0].Description);
+                    }
+                }
+
+                _logger.LogWarning("Weather data not found for country: {Country}, city: {City}", country, city);
+                return BadRequest("Unable to retrieve weather data");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving the weather data for country: {Country}, city: {City}", country, city);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
