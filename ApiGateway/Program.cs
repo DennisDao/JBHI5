@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<RateLimitService>();
@@ -22,5 +21,7 @@ app.UseMiddleware<RateLimitMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
 
 app.Run();

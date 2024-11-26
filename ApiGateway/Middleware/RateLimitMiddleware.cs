@@ -13,6 +13,11 @@
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if(context.Request.Path.Value == "/Weather.html")
+            {
+                await _next(context);
+            }
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var rateLimitService = scope.ServiceProvider.GetService<RateLimitService>();
